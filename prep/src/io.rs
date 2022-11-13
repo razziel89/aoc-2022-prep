@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{Context, Error, Result};
 use std::str::FromStr;
 
 fn read_lines_from_file(path: &str) -> Result<Vec<String>> {
@@ -10,14 +10,21 @@ fn read_lines_from_file(path: &str) -> Result<Vec<String>> {
         .collect())
 }
 
-pub fn parse_lines_to_data<T>(file: &str) -> Result<Vec<Result<T, <T as FromStr>::Err>>>
+pub fn parse_lines_to_data<T>(
+    file: &str,
+    type_name: &str,
+) -> Result<Vec<Result<T, <T as FromStr>::Err>>>
 where
-    T: FromStr,
+    T: FromStr<Err = Error>,
 {
     // Read file and convert into actions.
     Ok(read_lines_from_file(file)
         .context("reading lines")?
         .into_iter()
-        .map(|el| el.parse::<T>())
+        .enumerate()
+        .map(|(idx, el)| {
+            el.parse::<T>()
+                .with_context(|| format!("cannot parse line {} as {}: {}", idx, type_name, el))
+        })
         .collect())
 }

@@ -67,7 +67,7 @@ fn process(file: &str, update_fn: fn(Pos, Action) -> Pos) -> Result<()> {
     println!("PROCESSING {}", file);
 
     // Read file and convert into actions.
-    let actions = io::parse_lines_to_data(file).context("reading file")?;
+    let actions = io::parse_lines_to_data(file, "action").context("reading file")?;
 
     // Define starting conditions.
     let mut pos = START.clone();
