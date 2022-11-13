@@ -1,5 +1,3 @@
-use crate::data::Action;
-
 use anyhow::{Context, Result};
 use std::str::FromStr;
 
@@ -12,14 +10,14 @@ fn read_lines_from_file(path: &str) -> Result<Vec<String>> {
         .collect())
 }
 
-pub fn parse_lines_to_data(file: &str) -> Result<Vec<Result<Action>>> {
+pub fn parse_lines_to_data<T>(file: &str) -> Result<Vec<Result<T, <T as FromStr>::Err>>>
+where
+    T: FromStr,
+{
     // Read file and convert into actions.
     Ok(read_lines_from_file(file)
         .context("reading lines")?
         .into_iter()
-        .map(|el| {
-            el.parse::<Action>()
-                .with_context(|| format!("cannot convert '{}' to data", el))
-        })
+        .map(|el| el.parse::<T>())
         .collect())
 }
