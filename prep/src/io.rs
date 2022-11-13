@@ -10,18 +10,35 @@ fn read_lines_from_file(path: &str) -> Result<Vec<String>> {
         .collect())
 }
 
-pub fn parse_lines_to_data<T>(file: &str, type_name: &str) -> Result<Vec<Result<T>>>
+pub fn parse_lines_to_data<T>(file: &str, type_name: &str) -> Result<Vec<T>>
 where
     T: FromStr<Err = Error>,
 {
+    let mut errs: Vec<String> = vec![];
+
     // Read file and convert into actions.
-    Ok(read_lines_from_file(file)
+    let data = read_lines_from_file(file)
         .context("reading lines")?
         .into_iter()
         .enumerate()
-        .map(|(idx, el)| {
-            el.parse::<T>()
+        .filter_map(|(idx, el)| {
+            match el
+                .parse::<T>()
                 .with_context(|| format!("cannot parse line {} as {}: {}", idx, type_name, el))
+            {
+                Ok(val) => Some(val),
+                Err(err) => {
+                    errs.push(format!("{:?}", err));
+                    None
+                }
+            }
         })
-        .collect())
+        .collect();
+
+    if errs.len() == 0 {
+        Ok(data)
+    } else {
+        // Concatenate errors into one giant error message in case there were any in the file.
+        Err(Error::msg(errs.join("\n------------------\n")))
+    }
 }

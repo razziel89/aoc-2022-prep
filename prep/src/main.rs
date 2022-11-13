@@ -67,17 +67,14 @@ fn process(file: &str, update_fn: fn(Pos, Action) -> Pos) -> Result<()> {
     println!("PROCESSING {}", file);
 
     // Read file and convert into actions.
-    let actions = io::parse_lines_to_data(file, "action").context("reading file")?;
+    let actions = io::parse_lines_to_data::<Action>(file, "action").context("reading file")?;
 
     // Define starting conditions.
     let mut pos = START.clone();
 
     // Actually process by applying the update function to the position.
     for act in actions {
-        match act {
-            Ok(val) => pos = update_fn(pos, val),
-            Err(err) => return Err(err),
-        }
+        pos = update_fn(pos, act);
     }
 
     println!("final position is {:?}", pos);
