@@ -10,10 +10,7 @@ fn read_lines_from_file(path: &str) -> Result<Vec<String>> {
         .collect())
 }
 
-pub fn parse_lines_to_data<T>(
-    file: &str,
-    type_name: &str,
-) -> Result<Vec<Result<T, <T as FromStr>::Err>>>
+pub fn parse_lines_to_data<T>(file: &str, type_name: &str) -> Result<Vec<Result<T>>>
 where
     T: FromStr<Err = Error>,
 {
