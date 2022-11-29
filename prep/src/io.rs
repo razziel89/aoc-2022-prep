@@ -12,7 +12,7 @@ fn read_lines_from_file(path: &str) -> Result<Vec<String>> {
 
 pub fn parse_lines_to_data<T>(file: &str, type_name: &str) -> Result<Vec<T>>
 where
-    T: FromStr,
+    T: FromStr<Err = Error>,
 {
     let mut errs: Vec<String> = vec![];
 
