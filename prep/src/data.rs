@@ -21,3 +21,25 @@ impl FromStr for Action {
         }
     }
 }
+
+#[derive(Debug, PartialEq)]
+pub enum Spot {
+    X,
+    O,
+}
+
+impl FromStr for Spot {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self> {
+        if s.len() == 1 {
+            match s.chars().nth(0).unwrap_or('\0') {
+                'x' => Ok(Spot::X),
+                'o' => Ok(Spot::O),
+                _ => Err(Error::msg(format!("unexpected input {:?}", s))),
+            }
+        } else {
+            Err(Error::msg(format!("unexpected empty input")))
+        }
+    }
+}

@@ -3,13 +3,14 @@ extern crate derive_more;
 mod data;
 mod io;
 
-use crate::data::Action;
+use crate::data::{Action, Spot};
 
 use anyhow::{Context, Result};
 // use std::fmt::{Display, Formatter};
 
 const SAMPLE: &str = "sample.dat";
 const REAL: &str = "stage_1.dat";
+const MAP: &str = "map.dat";
 const START: Pos = Pos {
     dist: 0,
     depth: 0,
@@ -89,6 +90,9 @@ fn main() -> Result<()> {
 
     process(SAMPLE, apply_action_part2)?;
     process(REAL, apply_action_part2)?;
+
+    let output = io::parse_chars_to_data::<Spot>(MAP, "spot").map(io::hashmap_to_string)?;
+    println!("{}", output);
 
     Ok(())
 }
